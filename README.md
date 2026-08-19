@@ -1,5 +1,5 @@
 # dragonfly
-Programming language and compiler. A fun little challenge to myself, without any keywords.
+Programming language and compiler. A fun little challenge to myself, without any keywords outside of basic types.
 
 ```
 x := 10
