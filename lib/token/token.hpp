@@ -1,12 +1,12 @@
 #pragma once
 
 #include <string_view>
-#include <unordered_map>
 
 namespace dragonfly::lexer {
 
 enum class TokenType {
     END_OF_FILE,  
+    UNKNOWN,      
 
     // Values
     NUMBER,      // 123456789
@@ -44,7 +44,9 @@ enum class TokenType {
     GREATER_EQUAL,         // >=
     LESS_THAN,             // <
     LESS_EQUAL,            // <=
+    AMPERSAND,             // &
     AMPERSAND_AMPERSAND,   // &&
+    PIPE,                  // |
     PIPE_PIPE,             // ||
     CARET,                 // ^
 };
@@ -59,9 +61,5 @@ public:
     Token(std::string_view value, TokenType type, int line, int column)
         : type(type), value(value), line(line), column(column) {}
 };
-
-std::unordered_map<std::string_view, Token> TokenSymbolLookUp = {
-    {'', Token}
-}
 
 } 

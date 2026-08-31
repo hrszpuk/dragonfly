@@ -1,26 +1,31 @@
 #include <iostream>
 #include <fstream>
-#include "lexer.hpp"
-#include "token.hpp"
+#include "lexer/lexer.hpp"
+#include "token/token.hpp"
 
 void compile(const char* filename) {
     std::fstream file(filename, std::ios::in);
     if (file.is_open()) {
         std::cout << "Compiling file: " << filename << std::endl;
         
-        file.seekg(std::ios::end);
-        std::string_view code(file.tellg());
-        file.seekg(std::ios::beg);
+        std::string code;
 
+        // Read the file content into the string
+        code.assign((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
         if (code.empty()) {
             std::cout << "Error: File is empty" << std::endl;
             file.close();
             return;
         }
-
+        
         std::vector<Token> tokens;
 
-        Lexer lexer(code, &tokens);
+        Lexer lexer(code, tokens);
+        lexer.lex();
+
+        for (const auto& token : tokens) {
+            std::cout << "Token: " << token.value << ", Type: " << static_cast<int>(token.type) << ", Line: " << token.line << ", Column: " << token.column << std::endl;
+        }
 
         file.close();
     } else {

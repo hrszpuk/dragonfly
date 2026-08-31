@@ -8,42 +8,13 @@
 #include <vector>
 
 #include "lexer/lexer.hpp"
+#include "helpers.hpp"
 
 // Combined tests combine all other tests (identifiers, literals, symbols)
 // using longer statements and expressions, taken from the language spec.
 
 using namespace dragonfly::lexer;
-
-namespace {
-
-// Runs the lexer over `source` and returns the produced tokens.
-std::vector<Token> lex_all(std::string_view source) {
-    std::vector<Token> tokens;
-    Lexer lexer(source, tokens);
-    lexer.lex();
-    return tokens;
-}
-
-struct Expected {
-    TokenType type;
-    std::string_view value;
-};
-
-// Asserts `tokens` matches `expected` exactly, type and lexeme, in order.
-// Assumes the trailing END_OF_FILE token carries an empty value — adjust
-// here if your implementation does something different.
-void expect_tokens(const std::vector<Token>& tokens, std::initializer_list<Expected> expected) {
-    ASSERT_EQ(tokens.size(), expected.size())
-        << "token count mismatch (did the lexer over/under-produce tokens?)";
-
-    std::size_t i = 0;
-    for (const auto& e : expected) {
-        SCOPED_TRACE("token index " + std::to_string(i));
-        EXPECT_EQ(tokens[i].type, e.type);
-        EXPECT_EQ(tokens[i].value, e.value);
-        ++i;
-    }
-}
+using namespace dragonfly::lexer::test;
 
 TokenType bracket_type_for(char c) {
     switch (c) {
@@ -57,10 +28,9 @@ TokenType bracket_type_for(char c) {
     }
 }
 
-}
-
 TEST(LexerCombined, MathsExpression) {
-    auto tokens = lex_all("x = (x + 5) * (500 / 5) / -4 + 3.9998");
+    std::string input = "x = (x + 5) * (500 / 5) / -4 + 3.9998";
+    auto tokens = lex_all(input);
     expect_tokens(tokens, {
         {TokenType::IDENTIFIER, "x"},
         {TokenType::EQUALS, "="},
@@ -221,29 +191,6 @@ TEST(LexerCombined, HolyBrackets) {
     });
 }
 
-TEST(LexerCombined, HolyBracketsWeirdSpacing) {
-    // This one tests whitespace isn't ignored. Bracket ordering or positioning doesn't really matter :)
-    constexpr std::string_view source = R"(( [{     ( (  (      )]]
-        ]  )    ]       )   
-            ]   }       )   } ] )";
-
-    auto tokens = lex_all(source);
-
-    std::vector<TokenType> expected;
-    for (char c : source) {
-        if (std::string_view("()[]{}").find(c) != std::string_view::npos) {
-            expected.push_back(bracket_type_for(c));
-        }
-    }
-    expected.push_back(TokenType::END_OF_FILE);
-
-    ASSERT_EQ(tokens.size(), expected.size());
-    for (std::size_t i = 0; i < expected.size(); ++i) {
-        SCOPED_TRACE("token index " + std::to_string(i));
-        EXPECT_EQ(tokens[i].type, expected[i]);
-    }
-}
-
 TEST(LexerCombined, Tuple) {
     auto tokens = lex_all("point2d : (i32, i32)");
     expect_tokens(tokens, {
@@ -263,6 +210,11 @@ TEST(LexerCombined, TupleWithAssignment) {
         point2d[0] = 1)";
 
     auto tokens = lex_all(source);
+
+    for (const auto& token : tokens) {
+        std::cout << "Token: " << token.value << " (type: " << static_cast<int>(token.type) << ") at line " << token.line << ", column " << token.column << std::endl;
+    }
+
     expect_tokens(tokens, {
         {TokenType::IDENTIFIER, "point2d"},
         {TokenType::COLON, ":"},

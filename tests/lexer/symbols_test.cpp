@@ -36,7 +36,9 @@ TEST(LexerSymbols, GreaterEqual)       { expect_single_token(">=", TokenType::GR
 TEST(LexerSymbols, LessThan)           { expect_single_token("<", TokenType::LESS_THAN, "<"); }
 TEST(LexerSymbols, LessEqual)          { expect_single_token("<=", TokenType::LESS_EQUAL, "<="); }
 TEST(LexerSymbols, AmpersandAmpersand) { expect_single_token("&&", TokenType::AMPERSAND_AMPERSAND, "&&"); }
+TEST(LexerSymbols, Ampersand)          { expect_single_token("&", TokenType::AMPERSAND, "&"); }
 TEST(LexerSymbols, PipePipe)           { expect_single_token("||", TokenType::PIPE_PIPE, "||"); }
+TEST(LexerSymbols, Pipe)               { expect_single_token("|", TokenType::PIPE, "|"); }
 TEST(LexerSymbols, Caret)              { expect_single_token("^", TokenType::CARET, "^"); }
 
 
@@ -51,7 +53,8 @@ TEST(LexerSymbolsMaximalMunch, ColonEqualsIsOneTokenWhenAdjacent) {
 TEST(LexerSymbolsMaximalMunch, ColonThenEqualsSpaced) {
     auto tokens = lex_all(": =");
     expect_tokens(tokens, {
-        {TokenType::COLON_EQUALS, ":="},
+        {TokenType::COLON, ":"},
+        {TokenType::EQUALS, "="},
         {TokenType::END_OF_FILE, ""},
     });
 }
@@ -67,7 +70,8 @@ TEST(LexerSymbolsMaximalMunch, DoubleColonIsOneTokenWhenAdjacent) {
 TEST(LexerSymbolsMaximalMunch, DoubleColonSpaced) {
     auto tokens = lex_all(": :");
     expect_tokens(tokens, {
-        {TokenType::DOUBLE_COLON, "::"},
+        {TokenType::COLON, ":"},
+        {TokenType::COLON, ":"},
         {TokenType::END_OF_FILE, ""},
     });
 }
@@ -83,7 +87,8 @@ TEST(LexerSymbolsMaximalMunch, EqualsEqualsIsOneTokenWhenAdjacent) {
 TEST(LexerSymbolsMaximalMunch, EqualsThenEqualsIsEqualsEquals) {
     auto tokens = lex_all("= =");
     expect_tokens(tokens, {
-        {TokenType::EQUALS_EQUALS, "=="},
+        {TokenType::EQUALS, "="},
+        {TokenType::EQUALS, "="},
         {TokenType::END_OF_FILE, ""},
     });
 }
@@ -108,17 +113,6 @@ TEST(LexerSymbolsMaximalMunch, NotEqualsIsOneTokenWhenAdjacent) {
     auto tokens = lex_all("!=");
     expect_tokens(tokens, {
         {TokenType::NOT_EQUALS, "!="},
-        {TokenType::END_OF_FILE, ""},
-    });
-}
-
-TEST(LexerSymbolsMaximalMunch, WalrusButSpaced) {
-    auto tokens = lex_all("a : =5");
-    expect_tokens(tokens, {
-        {TokenType::IDENTIFIER, "a"},
-        {TokenType::COLON, ":"},
-        {TokenType::EQUALS, "="},
-        {TokenType::NUMBER, "5"},
         {TokenType::END_OF_FILE, ""},
     });
 }

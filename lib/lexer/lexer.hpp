@@ -19,15 +19,16 @@ class Lexer {
     public: 
         Lexer(std::string_view code, std::vector<Token>& tokens) : code(code), tokens(tokens) {};
 
-        inline std::string_view next(); 
-        inline std::string_view peek();
-        inline std::string_view current();
+        inline unsigned char next(); 
+        inline unsigned char peek();
+        inline unsigned char current();
 
         inline bool is_whitespace(char c);
         inline bool is_number(char c);
         
         void lex();
         void lex_string();
+        void lex_char();
         void lex_number();
         void lex_identifier();
         void lex_symbol();

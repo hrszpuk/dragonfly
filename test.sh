@@ -2,11 +2,12 @@
 # builds and runs the GoogleTest suite
 # thought it would be easier to set up a SPECIFICATION.md and tests before diving into building
 #
-# Commandss:
-#   ./test.sh                                  # run everything (A LOT OF DETAIL)
-#   ./test.sh --ctest                          # run just a summary, and only detail on failures
+# Commandss:    
+#   ./test.sh                                                       # run everything (A LOT OF DETAIL)
+#   ./test.sh --ctest                                               # run just a summary, and only detail on failures
+#   ./test.sh  --gtest_filter='LexerCombined.VariableWalrusChar'    # run a specific test
 #
-# Any arguments are forwarded straight to the dragonfly_tests binary except --ctest which switches runner.
+# Any arguments are forwarded straight to the dragonfly_tests binary except --ctest which switches runner :)))
 
 set -euo pipefail
 
