@@ -1,0 +1,3 @@
+add_executable(dragonflyc main.cpp)
+target_link_libraries(dragonflyc PRIVATE dragonfly_core)
+target_compile_features(dragonflyc PRIVATE cxx_std_20)
